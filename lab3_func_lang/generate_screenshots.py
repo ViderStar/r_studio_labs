@@ -35,9 +35,9 @@ def render_output(title: str, output: str, out_path: Path) -> None:
     print(f"Saved {out_path}")
 
 
-def run_lisp(script: Path, title: str, out_png: Path) -> None:
+def run_script(command: list[str], title: str, out_png: Path) -> None:
     result = subprocess.run(
-        ["sbcl", "--script", str(script)],
+        command,
         capture_output=True,
         text=True,
         check=False,
@@ -51,10 +51,15 @@ def run_lisp(script: Path, title: str, out_png: Path) -> None:
 if __name__ == "__main__":
     base = Path(__file__).resolve().parent
     tasks = [
-        ("task2_1.lisp", "Задание 2.1 — sbcl --script task2_1.lisp", "screenshot_task21.png"),
-        ("task2_2.lisp", "Задание 2.2 — sbcl --script task2_2.lisp", "screenshot_task22.png"),
-        ("task2_3.lisp", "Задание 2.3 — sbcl --script task2_3.lisp", "screenshot_task23.png"),
-        ("task3_text.lisp", "Задание 3 — sbcl --script task3_text.lisp", "screenshot_task3.png"),
+        (["sbcl", "--script", "task2_1.lisp"], "Задание 2.1 — sbcl --script task2_1.lisp", "screenshot_task21.png"),
+        (["sbcl", "--script", "task2_2.lisp"], "Задание 2.2 — sbcl --script task2_2.lisp", "screenshot_task22.png"),
+        (["sbcl", "--script", "task2_3.lisp"], "Задание 2.3 — sbcl --script task2_3.lisp", "screenshot_task23.png"),
+        (["sbcl", "--script", "task3_text.lisp"], "Задание 3 — sbcl --script task3_text.lisp", "screenshot_task3.png"),
+        (["python3", "task2_1.py"], "Задание 2.1 — python3 task2_1.py", "screenshot_task21_python.png"),
+        (["python3", "task2_2.py"], "Задание 2.2 — python3 task2_2.py", "screenshot_task22_python.png"),
+        (["python3", "task2_3.py"], "Задание 2.3 — python3 task2_3.py", "screenshot_task23_python.png"),
+        (["python3", "task3_text.py"], "Задание 3 — python3 task3_text.py", "screenshot_task3_python.png"),
     ]
-    for script, title, png in tasks:
-        run_lisp(base / script, title, base / png)
+    for command, title, png in tasks:
+        resolved_command = [command[0], *[str(base / arg) if arg.endswith((".lisp", ".py")) else arg for arg in command[1:]]]
+        run_script(resolved_command, title, base / png)

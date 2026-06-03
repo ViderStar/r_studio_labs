@@ -14,7 +14,7 @@
     (t
      (format nil "Значение x=~A не входит в область определения" x))))
 
-(setq a 2.0)
+(defparameter a 2.0)
 
 ;; Тестовые запуски
 (format t "Y(4, a=~A) = ~A~%" a (y-func 4 a))

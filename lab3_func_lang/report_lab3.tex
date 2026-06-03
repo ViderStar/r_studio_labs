@@ -190,6 +190,7 @@
 Характеристики среды выполнения:
 \begin{itemize}[nosep]
   \item интерпретатор: SBCL (Steel Bank Common Lisp) версии 2.6.5;
+  \item дополнительный язык для сравнения: Python 3;
   \item платформа: macOS (darwin, arm64);
   \item редактор: Visual Studio Code 1.122 с расширением Alive (rheller.alive);
   \item дополнительный способ запуска: терминал (\texttt{sbcl --script имя\_файла.lisp}).
@@ -290,7 +291,7 @@ Y(x) = \begin{cases}
      (format nil
        "x=~A не входит в область определения" x))))
 
-(setq a 2.0)
+(defparameter a 2.0)
 
 (format t "Y(4, a=~A) = ~A~%" a (y-func 4 a))
 (format t "Y(1.5, a=~A) = ~A~%" a (y-func 1.5 a))
@@ -371,7 +372,7 @@ Y(x) = \begin{cases}
 
 ;; Тест
 (defvar *input-text*
-  "hello world. this is a test. lisp is powerful")
+  "hello world. this is a test. functional programming is great. lisp is powerful")
 (format t "Результат:~%~A~%"
         (process-text *input-text*))
 \end{lstlisting}
@@ -380,6 +381,95 @@ Y(x) = \begin{cases}
 
 % =========================================================
 % РАЗДЕЛ 4
+% =========================================================
+\section{РЕАЛИЗАЦИЯ ЗАДАНИЙ НА ИМПЕРАТИВНОМ ЯЗЫКЕ PYTHON}
+
+Для сравнения функционального и императивного подходов те же задания были реализованы на языке Python. В Python-версии используются обычные переменные, условные операторы \texttt{if}/\texttt{elif}/\texttt{else} и циклы, что соответствует императивному стилю программирования.
+
+\subsection{Задание 2.1~-- вычисление математического выражения}
+
+\begin{lstlisting}[caption={Задание 2.1 на Python (task2\_1.py)}, language=Python]
+import math
+
+def task_2_1(m, n):
+    first_part = (m * n + 2) / (3 * n) - math.tan(math.log(4))
+    second_part = 5 * math.cos((n + m) / (20 * n)) / math.exp(n * m)
+    return math.sin(first_part) + second_part
+
+print(f"Результат task-2-1 для m=2, n=3: {task_2_1(2, 3)}")
+print(f"Результат task-2-1 для m=1, n=1: {task_2_1(1, 1)}")
+\end{lstlisting}
+
+\subsection{Задание 2.2~-- функция Y(x)}
+
+\begin{lstlisting}[caption={Задание 2.2 на Python (task2\_2.py)}, language=Python]
+import math
+
+def y_func(x, a):
+    if x >= 3:
+        return math.sin(x / a) + math.cos(a * x)
+    elif 1 < x < 2:
+        return math.log(x)
+    else:
+        return f"Значение x={x} не входит в область определения"
+
+a = 2.0
+
+print(f"Y(4, a={a}) = {y_func(4, a)}")
+print(f"Y(1.5, a={a}) = {y_func(1.5, a)}")
+print(f"Y(2.5, a={a}) = {y_func(2.5, a)}")
+\end{lstlisting}
+
+\subsection{Задание 2.3~-- вычисление факториала}
+
+\begin{lstlisting}[caption={Задание 2.3 на Python (task2\_3.py)}, language=Python]
+def factorial(n):
+    if n < 0:
+        raise ValueError("Факториал не определен для отрицательных чисел")
+
+    result = 1
+    for value in range(2, n + 1):
+        result *= value
+
+    return result
+
+for number in (0, 1, 5, 10, 20):
+    print(f"{number}! = {factorial(number)}")
+\end{lstlisting}
+
+\subsection{Задание 3~-- обработка текста}
+
+\begin{lstlisting}[caption={Задание 3 на Python (task3\_text.py)}, language=Python]
+def process_text(text):
+    raw_sentences = text.split(".")
+    processed_sentences = []
+
+    for sentence in raw_sentences:
+        trimmed = sentence.strip()
+        if not trimmed:
+            continue
+
+        processed = trimmed[0].upper() + trimmed[1:]
+        processed_sentences.append(processed)
+
+    return ". ".join(processed_sentences) + "."
+
+input_text = (
+    "hello world. this is a test. functional programming is great. "
+    "lisp is powerful"
+)
+
+print("Исходный текст:")
+print(input_text)
+print()
+print("Результат:")
+print(process_text(input_text))
+\end{lstlisting}
+
+\newpage
+
+% =========================================================
+% РАЗДЕЛ 5
 % =========================================================
 \section{ОСНОВНЫЕ КОНСТРУКЦИИ ЯЗЫКА}
 
@@ -406,11 +496,44 @@ Y(x) = \begin{cases}
 \newpage
 
 % =========================================================
-% РАЗДЕЛ 5
+% РАЗДЕЛ 6
+% =========================================================
+\section{СРАВНЕНИЕ ФУНКЦИОНАЛЬНОГО И ИМПЕРАТИВНОГО ПОДХОДОВ}
+
+Реализации на Common Lisp и Python дают одинаковые результаты на выбранных тестовых данных, однако отличаются способом описания вычислений.
+
+\begin{table}[H]
+\centering
+\caption{Сравнение реализаций на Common Lisp и Python}
+\begin{tabularx}{\textwidth}{|p{0.24\textwidth}|X|X|}
+\hline
+\textbf{Критерий} & \textbf{Common Lisp} & \textbf{Python} \\
+\hline
+Математические выражения & Записываются в префиксной форме: операция указывается перед аргументами. & Записываются в привычной инфиксной форме, близкой к математической записи. \\
+\hline
+Условные конструкции & Используется \texttt{cond}, где каждая ветвь содержит условие и выражение-результат. & Используются операторы \texttt{if}, \texttt{elif}, \texttt{else}, которые выполняют последовательные команды. \\
+\hline
+Повторение действий & В задании факториал реализован через хвостовую рекурсию с аккумулятором. & Факториал реализован через цикл \texttt{for} и изменяемую переменную \texttt{result}. \\
+\hline
+Обработка текста & Список предложений преобразуется функционалами \texttt{mapcar} и \texttt{reduce}. & Предложения обрабатываются последовательно в цикле, результат накапливается в списке. \\
+\hline
+Стиль программы & Акцент сделан на вычислении значений выражений и применении функций. & Акцент сделан на последовательности действий и изменении промежуточного состояния. \\
+\hline
+\end{tabularx}
+\end{table}
+
+Наиболее заметное отличие проявляется в задании 2.3. В Common Lisp факториал описывается рекурсивно: функция передает новое значение аккумулятора в следующий вызов. В Python та же задача естественно выражается циклом, где переменная \texttt{result} изменяется на каждой итерации.
+
+В задании 3 функциональная реализация показывает применение функций высшего порядка: одна функция применяется ко всем предложениям, а затем список результатов сворачивается в строку. Императивная Python-версия явно проходит по предложениям, проверяет каждую строку и добавляет обработанный результат в список. Такой вариант проще воспринимается как последовательный алгоритм, но сильнее зависит от изменяемого состояния.
+
+\newpage
+
+% =========================================================
+% РАЗДЕЛ 7
 % =========================================================
 \section{РЕЗУЛЬТАТЫ РАБОТЫ КОДА}
 
-В данном разделе приведены экранные формы, отображающие результаты выполнения программ в среде SBCL (запуск через \texttt{sbcl --script}) с использованием Visual Studio Code и расширения Alive.
+В данном разделе приведены экранные формы, отображающие результаты выполнения программ в среде SBCL (запуск через \texttt{sbcl --script}) и Python (запуск через \texttt{python3}).
 
 \begin{figure}[H]
   \centering
@@ -440,6 +563,34 @@ Y(x) = \begin{cases}
   \label{fig:task3}
 \end{figure}
 
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.85\textwidth]{screenshot_task21_python.png}
+  \caption{Результат выполнения задания 2.1 на Python}
+  \label{fig:task21-python}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.85\textwidth]{screenshot_task22_python.png}
+  \caption{Результат выполнения задания 2.2 на Python}
+  \label{fig:task22-python}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.85\textwidth]{screenshot_task23_python.png}
+  \caption{Результат выполнения задания 2.3 на Python}
+  \label{fig:task23-python}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.85\textwidth]{screenshot_task3_python.png}
+  \caption{Результат выполнения задания 3 на Python}
+  \label{fig:task3-python}
+\end{figure}
+
 \newpage
 
 % =========================================================
@@ -460,7 +611,11 @@ Y(x) = \begin{cases}
 
 5 Разработана программа обработки текста на естественном языке с применением функционалов \texttt{mapcar} и \texttt{reduce}, без использования циклов и изменяемых переменных.
 
-6 Изучены основные конструкции языка Common Lisp: определение функций, условные выражения, рекурсия, функции высшего порядка, работа со строками и списками.
+6 Выполнена дополнительная реализация заданий на императивном языке Python с использованием условных операторов, циклов и изменяемых переменных.
+
+7 Проведено сравнение функционального и императивного подходов. Установлено, что оба варианта дают одинаковые результаты на тестовых данных, но отличаются способом организации вычислений: Common Lisp ориентирован на применение функций и рекурсию, а Python~-- на последовательность команд и явное изменение состояния.
+
+8 Изучены основные конструкции языка Common Lisp: определение функций, условные выражения, рекурсия, функции высшего порядка, работа со строками и списками.
 
 \newpage
 
@@ -480,6 +635,7 @@ Y(x) = \begin{cases}
   \item Alive: Common Lisp extension for VS Code [Электронный ресурс].~-- Режим доступа: \url{https://marketplace.visualstudio.com/items?itemName=rheller.alive}.~-- Дата доступа: 02.06.2026.
   \item Visual Studio Code [Электронный ресурс].~-- Режим доступа: \url{https://code.visualstudio.com/}.~-- Дата доступа: 02.06.2026.
   \item Мерц, Д. Функциональное программирование на Python / Д.~Мерц.~-- М.~: АСТ, 2026.~-- 128~с.
+  \item Python 3 Documentation [Электронный ресурс].~-- Режим доступа: \url{https://docs.python.org/3/}.~-- Дата доступа: 03.06.2026.
 \end{enumerate}
 
 \end{document}
